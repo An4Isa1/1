@@ -7,207 +7,287 @@
   <style>
     body {
       font-family: 'Times New Roman', serif;
-      background-color: #f8f8f8;
       margin: 0;
-      padding: 20px;
+      padding: 0;
     }
+
     h1, h2 {
-      font-family: 'Georgia', serif;
+      font-family: Georgia, serif;
       font-style: italic;
       text-align: center;
     }
-    .contenedor-semestres {
+
+    .semestres {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 40px;
+      gap: 20px;
+      padding: 20px;
     }
+
     .semestre {
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       padding: 10px;
-      width: 230px;
+      border-radius: 10px;
+      width: 200px;
     }
-    .semestre h3 {
-      text-align: center;
-      font-weight: bold;
-    }
+
+    .semestre-1 { background-color: #e1f5fe; }
+    .semestre-2 { background-color: #ffecb3; }
+    .semestre-3 { background-color: #dcedc8; }
+    .semestre-4 { background-color: #f8bbd0; }
+    .semestre-5 { background-color: #ffe0b2; }
+    .semestre-6 { background-color: #d1c4e9; }
+    .semestre-7 { background-color: #b2ebf2; }
+    .semestre-8 { background-color: #c8e6c9; }
+    .semestre-9 { background-color: #f0f4c3; }
+
     .materia {
-      padding: 6px;
-      background-color: #ffffff;
-      margin: 4px 0;
-      border-radius: 6px;
+      padding: 5px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      background: white;
       cursor: pointer;
     }
+
     .materia.bloqueada {
-      background-color: #ddd;
-      color: #888;
+      background: #ccc;
       cursor: not-allowed;
+      opacity: 0.5;
     }
-    .materia.completada {
+
+    .materia.aprobada {
       text-decoration: line-through;
-      background-color: #c8e6c9;
+      background: #a5d6a7;
     }
-    .formulario-extra {
-      margin-top: 10px;
-      padding: 10px;
-      background: #f0f0f0;
-      border-radius: 8px;
-    }
-    .formulario-extra input {
-      margin: 4px 0;
-      padding: 4px;
-      width: 100%;
-    }
-    .info-final {
-      margin-top: 60px;
+
+    .info-materias {
       padding: 20px;
-      background-color: #eef;
-      border-radius: 12px;
     }
-    .semestre-1 { background-color: #ffdddd; }
-    .semestre-2 { background-color: #ffeedd; }
-    .semestre-3 { background-color: #ffffcc; }
-    .semestre-4 { background-color: #ddffdd; }
-    .semestre-5 { background-color: #ccffff; }
-    .semestre-6 { background-color: #ddeeff; }
-    .semestre-7 { background-color: #e0ccff; }
-    .semestre-8 { background-color: #ffccf2; }
-    .semestre-9 { background-color: #cccccc; }
+
+    .detalle {
+      margin-bottom: 20px;
+      border-top: 1px solid #aaa;
+      padding-top: 10px;
+    }
+
+    input {
+      margin: 5px 0;
+      display: block;
+    }
+
+    button {
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
+  <h1>Pensum Economía</h1>
+  <h2>UMNG</h2>
 
-<h1>Pensum Economía</h1>
-<h2>UMNG</h2>
+  <div class="semestres" id="contenedor-semestres"></div>
 
-<div id="contenedor-semestres" class="contenedor-semestres"></div>
+  <h2>Información de materias aprobadas</h2>
+  <div id="info-materias" class="info-materias"></div>
 
-<div class="info-final">
-  <h2>Información de Profesores, Notas y Promedios</h2>
-  <div id="info-extra"></div>
-</div>
+  <script>
+    const pensum = [
+      {
+        nombre: "Economía I",
+        requisitos: [],
+        semestre: 1
+      },
+      {
+        nombre: "Matemáticas I",
+        requisitos: [],
+        semestre: 1
+      },
+      {
+        nombre: "Historia Económica",
+        requisitos: [],
+        semestre: 1
+      },
+      {
+        nombre: "Economía II",
+        requisitos: ["Economía I"],
+        semestre: 2
+      },
+      {
+        nombre: "Matemáticas II",
+        requisitos: ["Matemáticas I"],
+        semestre: 2
+      },
+      {
+        nombre: "Microeconomía I",
+        requisitos: ["Economía I"],
+        semestre: 3
+      },
+      {
+        nombre: "Macroeconomía I",
+        requisitos: ["Economía II"],
+        semestre: 3
+      },
+      {
+        nombre: "Microeconomía II",
+        requisitos: ["Microeconomía I"],
+        semestre: 4
+      },
+      {
+        nombre: "Macroeconomía II",
+        requisitos: ["Macroeconomía I"],
+        semestre: 4
+      },
+      {
+        nombre: "Trabajo de Grado",
+        requisitos: ["Microeconomía II", "Macroeconomía II"],
+        semestre: 9
+      }
+    ];
 
-<script>
-  const pensum = [
-    {
-      numero: 1,
-      materias: [
-        { nombre: "Economía I", requisitos: [] },
-        { nombre: "Matemáticas I", requisitos: [] },
-        { nombre: "Historia Económica General", requisitos: [] },
-        { nombre: "Contabilidad General", requisitos: [] },
-        { nombre: "Lectura y Escritura Académica", requisitos: [] }
-      ]
-    },
-    {
-      numero: 2,
-      materias: [
-        { nombre: "Economía II", requisitos: ["Economía I"] },
-        { nombre: "Matemáticas II", requisitos: ["Matemáticas I"] },
-        { nombre: "Historia Económica de Colombia", requisitos: ["Historia Económica General"] },
-        { nombre: "Contabilidad Nacional", requisitos: ["Contabilidad General"] },
-        { nombre: "Estadística I", requisitos: ["Matemáticas I"] }
-      ]
-    }
-    // Puedes continuar agregando los semestres del 3 al 9 aquí con sus materias y requisitos
-  ];
+    let estado = JSON.parse(localStorage.getItem("estadoMaterias")) || {};
 
-  const estadoMaterias = JSON.parse(localStorage.getItem('estadoMaterias')) || {};
+    const contenedor = document.getElementById("contenedor-semestres");
+    const infoMaterias = document.getElementById("info-materias");
 
-  function guardarEstado() {
-    localStorage.setItem('estadoMaterias', JSON.stringify(estadoMaterias));
-  }
+    function renderizar() {
+      contenedor.innerHTML = "";
+      infoMaterias.innerHTML = "";
 
-  function crearFormularioExtra(nombreMateria, container) {
-    container.innerHTML = `
-      <div class="formulario-extra">
-        <label>Número de intentos: <input type="number" min="1" value="1" class="input-intentos"></label>
-        <div class="contenedor-intentos"></div>
-      </div>
-    `;
+      for (let s = 1; s <= 9; s++) {
+        const divSem = document.createElement("div");
+        divSem.className = `semestre semestre-${s}`;
 
-    const inputIntentos = container.querySelector('.input-intentos');
-    const contenedorIntentos = container.querySelector('.contenedor-intentos');
+        const titulo = document.createElement("b");
+        titulo.innerText = `Semestre ${s}`;
+        divSem.appendChild(titulo);
 
-    function crearBloquesIntento(num) {
-      contenedorIntentos.innerHTML = '';
-      for (let i = 1; i <= num; i++) {
-        const intento = document.createElement('div');
-        intento.innerHTML = `
-          <h4>Intento ${i}</h4>
-          <label>Profesor: <input type="text" class="profesor"></label>
-          <label>Nota 1 (30%): <input type="number" step="0.01" class="nota1"></label>
-          <label>Nota 2 (30%): <input type="number" step="0.01" class="nota2"></label>
-          <label>Nota 3 (40%): <input type="number" step="0.01" class="nota3"></label>
-          <p>Definitiva: <span class="promedio"></span></p>
-        `;
-        contenedorIntentos.appendChild(intento);
+        pensum.filter(m => m.semestre === s).forEach(materia => {
+          const div = document.createElement("div");
+          div.className = "materia";
+          div.innerText = materia.nombre;
 
-        const inputs = intento.querySelectorAll('input');
-        inputs.forEach(input => input.addEventListener('input', () => {
-          const n1 = parseFloat(intento.querySelector('.nota1').value) || 0;
-          const n2 = parseFloat(intento.querySelector('.nota2').value) || 0;
-          const n3 = parseFloat(intento.querySelector('.nota3').value) || 0;
-          const promedio = (n1 * 0.3 + n2 * 0.3 + n3 * 0.4).toFixed(2);
-          intento.querySelector('.promedio').textContent = promedio;
-        }));
+          const estadoActual = estado[materia.nombre] || { aprobada: false, intentos: [] };
+
+          if (estadoActual.aprobada) {
+            div.classList.add("aprobada");
+          } else if (!materia.requisitos.every(r => estado[r]?.aprobada)) {
+            div.classList.add("bloqueada");
+          }
+
+          div.addEventListener("click", () => {
+            if (!div.classList.contains("bloqueada")) {
+              if (!estado[materia.nombre]) {
+                estado[materia.nombre] = { aprobada: true, intentos: [{ profesor: "", notas: [0, 0, 0] }] };
+              } else {
+                estado[materia.nombre].aprobada = true;
+              }
+              guardarEstado();
+              renderizar();
+            }
+          });
+
+          divSem.appendChild(div);
+        });
+
+        contenedor.appendChild(divSem);
+      }
+
+      // Mostrar detalles al final
+      for (const nombre in estado) {
+        const materia = estado[nombre];
+        if (!materia.aprobada) continue;
+
+        const detalle = document.createElement("div");
+        detalle.className = "detalle";
+
+        const titulo = document.createElement("h3");
+        titulo.innerText = nombre;
+        detalle.appendChild(titulo);
+
+        const labelIntentos = document.createElement("label");
+        labelIntentos.textContent = "Número de intentos:";
+        const inputIntentos = document.createElement("input");
+        inputIntentos.type = "number";
+        inputIntentos.min = 1;
+        inputIntentos.value = materia.intentos.length;
+        inputIntentos.addEventListener("change", () => {
+          const nuevosIntentos = parseInt(inputIntentos.value);
+          while (materia.intentos.length < nuevosIntentos) {
+            materia.intentos.push({ profesor: "", notas: [0, 0, 0] });
+          }
+          materia.intentos = materia.intentos.slice(0, nuevosIntentos);
+          guardarEstado();
+          renderizar();
+        });
+
+        detalle.appendChild(labelIntentos);
+        detalle.appendChild(inputIntentos);
+
+        materia.intentos.forEach((intento, index) => {
+          const cont = document.createElement("div");
+          cont.innerHTML = `<b>Intento ${index + 1}</b>`;
+          
+          const prof = document.createElement("input");
+          prof.placeholder = "Nombre del profesor";
+          prof.value = intento.profesor;
+          prof.addEventListener("input", e => {
+            intento.profesor = e.target.value;
+            guardarEstado();
+          });
+
+          const n1 = document.createElement("input");
+          n1.type = "number";
+          n1.placeholder = "Nota 1 (30%)";
+          n1.value = intento.notas[0];
+          n1.addEventListener("input", e => {
+            intento.notas[0] = parseFloat(e.target.value) || 0;
+            guardarEstado();
+            renderizar();
+          });
+
+          const n2 = document.createElement("input");
+          n2.type = "number";
+          n2.placeholder = "Nota 2 (30%)";
+          n2.value = intento.notas[1];
+          n2.addEventListener("input", e => {
+            intento.notas[1] = parseFloat(e.target.value) || 0;
+            guardarEstado();
+            renderizar();
+          });
+
+          const n3 = document.createElement("input");
+          n3.type = "number";
+          n3.placeholder = "Nota 3 (40%)";
+          n3.value = intento.notas[2];
+          n3.addEventListener("input", e => {
+            intento.notas[2] = parseFloat(e.target.value) || 0;
+            guardarEstado();
+            renderizar();
+          });
+
+          const def = (intento.notas[0] * 0.3 + intento.notas[1] * 0.3 + intento.notas[2] * 0.4).toFixed(2);
+          const defLabel = document.createElement("p");
+          defLabel.innerText = `Definitiva: ${def}`;
+
+          cont.appendChild(prof);
+          cont.appendChild(n1);
+          cont.appendChild(n2);
+          cont.appendChild(n3);
+          cont.appendChild(defLabel);
+          detalle.appendChild(cont);
+        });
+
+        infoMaterias.appendChild(detalle);
       }
     }
 
-    crearBloquesIntento(1);
+    function guardarEstado() {
+      localStorage.setItem("estadoMaterias", JSON.stringify(estado));
+    }
 
-    inputIntentos.addEventListener('input', () => {
-      const cantidad = parseInt(inputIntentos.value) || 1;
-      crearBloquesIntento(cantidad);
-    });
-  }
-
-  function actualizarVista() {
-    const contenedor = document.getElementById('contenedor-semestres');
-    contenedor.innerHTML = '';
-
-    pensum.forEach(semestre => {
-      const div = document.createElement('div');
-      div.className = `semestre semestre-${semestre.numero}`;
-      div.innerHTML = `<h3>Semestre ${semestre.numero}</h3>`;
-
-      semestre.materias.forEach(materia => {
-        const matDiv = document.createElement('div');
-        matDiv.className = 'materia';
-        matDiv.textContent = materia.nombre;
-
-        const completada = estadoMaterias[materia.nombre]?.completada;
-        const requisitosCumplidos = materia.requisitos.every(req => estadoMaterias[req]?.completada);
-
-        if (completada) matDiv.classList.add('completada');
-        else if (!requisitosCumplidos) matDiv.classList.add('bloqueada');
-
-        matDiv.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (!requisitosCumplidos) return;
-
-          if (!estadoMaterias[materia.nombre]?.completada) {
-            estadoMaterias[materia.nombre] = { completada: true };
-            guardarEstado();
-            matDiv.classList.add('completada');
-
-            const extraForm = document.createElement('div');
-            crearFormularioExtra(materia.nombre, extraForm);
-            matDiv.appendChild(extraForm);
-          }
-        });
-
-        div.appendChild(matDiv);
-      });
-
-      contenedor.appendChild(div);
-    });
-  }
-
-  actualizarVista();
-</script>
-
+    renderizar();
+  </script>
 </body>
 </html>
