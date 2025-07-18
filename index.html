@@ -1,48 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title><i>Pensum Economía</i> - UMNG</title>
+  <meta charset="UTF-8" />
+  <title>Pensum Economía UMNG</title>
   <style>
-    /* Estilo general */
     body {
       font-family: "Times New Roman", serif;
-      background: #f4f4f4;
-      margin: 0;
-      padding: 20px;
+      background: #f9f9f9;
+      margin: 20px;
     }
-
     h1, h2 {
       font-family: Georgia, serif;
       font-style: italic;
       text-align: center;
     }
-
-    h1 {
-      font-size: 2em;
-    }
-
     .contenedor-semestres {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
       gap: 20px;
+      justify-content: center;
       margin-top: 30px;
     }
-
     .semestre {
-      border-radius: 15px;
-      padding: 15px;
+      background-color: #e3e3e3;
+      border-radius: 10px;
       width: 280px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      padding: 15px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
-
-    .semestre h3 {
-      font-weight: bold;
-      text-align: center;
-    }
-
-    /* Colores por semestre */
     .semestre-1 { background-color: #d1e7dd; }
     .semestre-2 { background-color: #ffeeba; }
     .semestre-3 { background-color: #f8d7da; }
@@ -52,55 +37,54 @@
     .semestre-7 { background-color: #fff3cd; }
     .semestre-8 { background-color: #f5c6cb; }
     .semestre-9 { background-color: #b8daff; }
-
     .materia {
-      background-color: #fff;
+      background: white;
+      margin: 8px 0;
       padding: 10px;
-      margin: 6px 0;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
       position: relative;
     }
-
     .materia.bloqueada {
-      background-color: #ccc;
+      background: #ccc;
       color: #666;
       cursor: not-allowed;
     }
-
     .materia.aprobada {
+      background-color: #a8e6a3;
       text-decoration: line-through;
-      background-color: #b0e57c;
+      cursor: default;
     }
-
     .formulario {
       display: none;
-      margin-top: 10px;
+      margin-top: 8px;
     }
-
     .formulario input {
       display: block;
-      margin-bottom: 6px;
-      width: 90%;
-      padding: 4px;
+      width: 95%;
+      margin: 6px 0;
+      padding: 6px;
       font-size: 14px;
     }
-
     .formulario button {
-      padding: 6px 10px;
+      padding: 6px 12px;
       cursor: pointer;
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
 
-  <h1><i>Pensum Economía</i></h1>
+  <h1>Pensum Economía</h1>
   <h2>UMNG</h2>
 
-  <!-- Contenedor principal de los semestres -->
   <div class="contenedor-semestres" id="contenedor"></div>
 
   <script>
+    // Definición de materias por semestre
     const materias = {
       1: [
         { nombre: "Economía I", requisitos: [] },
@@ -114,48 +98,65 @@
       3: [
         { nombre: "Microeconomía I", requisitos: ["Economía II", "Matemáticas II"] },
         { nombre: "Contabilidad General", requisitos: [] }
-      ]
-      // Puedes continuar con los semestres 4 a 9 aquí...
+      ],
+      // Completa con los semestres 4 a 9 si quieres
     };
 
+    // Estado guardado en localStorage
     const estado = JSON.parse(localStorage.getItem("estadoPensum")) || {};
 
-    function crearMateria(materia, semestre) {
+    // Función que verifica si una materia está desbloqueada (sus requisitos están aprobados)
+    function estaDesbloqueada(materia) {
+      return materia.requisitos.every(req => estado[req]?.aprobada);
+    }
+
+    // Función para crear cada materia en el DOM
+    function crearMateria(materia) {
       const div = document.createElement("div");
       div.classList.add("materia");
 
-      const desbloqueada = materia.requisitos.every(req => estado[req]?.aprobada);
+      const desbloqueada = estaDesbloqueada(materia);
+
+      // Materia bloqueada
       if (!desbloqueada) {
         div.classList.add("bloqueada");
+        div.textContent = materia.nombre + " (Requisitos no cumplidos)";
+        return div;
       }
 
+      // Materia aprobada
       if (estado[materia.nombre]?.aprobada) {
         div.classList.add("aprobada");
-        div.textContent = `${materia.nombre} (Aprobada)`;
-      } else {
-        div.textContent = materia.nombre;
+        div.textContent = `${materia.nombre} (Aprobada) - Profesor: ${estado[materia.nombre].profesor} - Promedio: ${estado[materia.nombre].promedio}`;
+        return div;
       }
 
-      // Crear formulario oculto
+      // Materia desbloqueada y no aprobada aún
+      div.textContent = materia.nombre;
+
+      // Crear formulario oculto para profesor y notas
       const formulario = document.createElement("div");
       formulario.classList.add("formulario");
 
       formulario.innerHTML = `
-        <input type="text" placeholder="Profesor" name="profesor">
-        <input type="number" placeholder="Nota 1" step="0.1" min="0" max="5" name="nota1">
-        <input type="number" placeholder="Nota 2" step="0.1" min="0" max="5" name="nota2">
-        <input type="number" placeholder="Nota 3" step="0.1" min="0" max="5" name="nota3">
+        <input type="text" name="profesor" placeholder="Nombre del profesor" />
+        <input type="number" name="nota1" min="0" max="5" step="0.1" placeholder="Nota corte 1" />
+        <input type="number" name="nota2" min="0" max="5" step="0.1" placeholder="Nota corte 2" />
+        <input type="number" name="nota3" min="0" max="5" step="0.1" placeholder="Nota corte 3" />
         <button>Guardar</button>
       `;
 
-      formulario.querySelector("button").addEventListener("click", () => {
-        const profesor = formulario.querySelector('[name="profesor"]').value.trim();
-        const n1 = parseFloat(formulario.querySelector('[name="nota1"]').value);
-        const n2 = parseFloat(formulario.querySelector('[name="nota2"]').value);
-        const n3 = parseFloat(formulario.querySelector('[name="nota3"]').value);
+      // Añadir evento al botón Guardar
+      formulario.querySelector("button").addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        const profesor = formulario.querySelector('input[name="profesor"]').value.trim();
+        const n1 = parseFloat(formulario.querySelector('input[name="nota1"]').value);
+        const n2 = parseFloat(formulario.querySelector('input[name="nota2"]').value);
+        const n3 = parseFloat(formulario.querySelector('input[name="nota3"]').value);
 
         if (!profesor || isNaN(n1) || isNaN(n2) || isNaN(n3)) {
-          alert("Completa todos los campos correctamente.");
+          alert("Por favor completa todos los campos correctamente.");
           return;
         }
 
@@ -163,48 +164,54 @@
 
         estado[materia.nombre] = {
           profesor,
-          notas: [n1, n2, n3],
+          nota1: n1,
+          nota2: n2,
+          nota3: n3,
           promedio,
           aprobada: promedio >= 3.0
         };
 
         localStorage.setItem("estadoPensum", JSON.stringify(estado));
-        location.reload(); // Recargar para actualizar la vista
+
+        // Recargar para actualizar el estado visual
+        location.reload();
       });
 
       div.appendChild(formulario);
 
+      // Mostrar/ocultar formulario al hacer clic en la materia (si no está bloqueada ni aprobada)
       div.addEventListener("click", () => {
-        if (div.classList.contains("bloqueada")) {
-          alert("No puedes cursar esta materia aún. Requisitos: " + materia.requisitos.join(", "));
-          return;
+        if (formulario.style.display === "block") {
+          formulario.style.display = "none";
+        } else {
+          formulario.style.display = "block";
         }
-
-        // Alternar visibilidad del formulario
-        const visible = formulario.style.display === "block";
-        formulario.style.display = visible ? "none" : "block";
       });
 
       return div;
     }
 
-    function cargarMaterias() {
+    // Función para renderizar el pensum completo
+    function renderizar() {
       const contenedor = document.getElementById("contenedor");
-      for (let semestre in materias) {
-        const semDiv = document.createElement("div");
-        semDiv.classList.add("semestre", `semestre-${semestre}`);
-        semDiv.innerHTML = `<h3>Semestre <strong>${semestre}</strong></h3>`;
+      contenedor.innerHTML = ""; // Limpiar
+
+      for (const semestre in materias) {
+        const divSemestre = document.createElement("div");
+        divSemestre.classList.add("semestre", `semestre-${semestre}`);
+        divSemestre.innerHTML = `<h3>Semestre ${semestre}</h3>`;
 
         materias[semestre].forEach(materia => {
-          const matDiv = crearMateria(materia, semestre);
-          semDiv.appendChild(matDiv);
+          const materiaDiv = crearMateria(materia);
+          divSemestre.appendChild(materiaDiv);
         });
 
-        contenedor.appendChild(semDiv);
+        contenedor.appendChild(divSemestre);
       }
     }
 
-    cargarMaterias();
+    // Inicializar renderizado
+    renderizar();
   </script>
 
 </body>
