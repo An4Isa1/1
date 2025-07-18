@@ -2,539 +2,212 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pensum Economía UMNG - Intentos múltiples</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pensum Economía UMNG</title>
   <style>
     body {
       font-family: 'Times New Roman', serif;
-      background-color: #f4f4f4;
+      background-color: #f8f8f8;
       margin: 0;
       padding: 20px;
     }
     h1, h2 {
-      font-family: Georgia, serif;
+      font-family: 'Georgia', serif;
       font-style: italic;
       text-align: center;
-      color: #154360;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-top: 20px;
+    .contenedor-semestres {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 40px;
     }
     .semestre {
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: 10px;
       padding: 10px;
-      border-radius: 10px;
+      width: 230px;
     }
     .semestre h3 {
-      font-weight: bold;
       text-align: center;
+      font-weight: bold;
     }
     .materia {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      margin: 10px 0;
-      padding: 10px;
+      padding: 6px;
+      background-color: #ffffff;
+      margin: 4px 0;
+      border-radius: 6px;
       cursor: pointer;
-      user-select: none;
-      position: relative;
     }
     .materia.bloqueada {
-      opacity: 0.5;
-      pointer-events: none;
+      background-color: #ddd;
+      color: #888;
+      cursor: not-allowed;
     }
-    .materia.aprobada {
-      background-color: #d4efdf;
+    .materia.completada {
       text-decoration: line-through;
+      background-color: #c8e6c9;
     }
-    .requisitos {
-      font-size: 0.9em;
-      color: #555;
-      margin-top: 8px;
-      display: none;
-    }
-    .materia.activa .requisitos {
-      display: block;
-    }
-    .semestre-1 { background-color: #d6eaf8; }
-    .semestre-2 { background-color: #aed6f1; }
-    .semestre-3 { background-color: #85c1e9; }
-    .semestre-4 { background-color: #7fb3d5; }
-    .semestre-5 { background-color: #5499c7; }
-    .semestre-6 { background-color: #2980b9; }
-    .semestre-7 { background-color: #2471a3; }
-    .semestre-8 { background-color: #1f618d; }
-    .semestre-9 { background-color: #1a5276; }
-    button {
+    .formulario-extra {
       margin-top: 10px;
-      padding: 5px 10px;
-      cursor: pointer;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 8px;
     }
-    .resumen {
-      margin-top: 40px;
-      background: white;
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .resumen h2 {
-      margin-top: 0;
-      color: #154360;
-      text-align: center;
-      font-family: Georgia, serif;
-      font-style: italic;
-    }
-    table {
+    .formulario-extra input {
+      margin: 4px 0;
+      padding: 4px;
       width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
     }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background-color: #aed6f1;
-    }
-    /* Formulario al final */
-    #formularioDetalle {
-      margin-top: 40px;
-      background: #fff;
-      border-radius: 10px;
+    .info-final {
+      margin-top: 60px;
       padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-      display: none;
+      background-color: #eef;
+      border-radius: 12px;
     }
-    #formularioDetalle label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    #formularioDetalle input[type="text"],
-    #formularioDetalle input[type="number"] {
-      width: 100%;
-      padding: 7px;
-      margin-top: 4px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      font-size: 1em;
-    }
-    #formularioDetalle .promedio {
-      margin-top: 15px;
-      font-weight: bold;
-      color: #2e7d32;
-    }
-    #intentosControls {
-      margin-top: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-    #intentosControls button {
-      flex: 1;
-      padding: 6px;
-      font-weight: bold;
-      background-color: #aed6f1;
-      border: none;
-      border-radius: 5px;
-      transition: background-color 0.3s ease;
-    }
-    #intentosControls button:hover {
-      background-color: #85c1e9;
-    }
-    #intentoNumero {
-      font-weight: bold;
-      font-size: 1.1em;
-      text-align: center;
-      flex: 2;
-    }
+    .semestre-1 { background-color: #ffdddd; }
+    .semestre-2 { background-color: #ffeedd; }
+    .semestre-3 { background-color: #ffffcc; }
+    .semestre-4 { background-color: #ddffdd; }
+    .semestre-5 { background-color: #ccffff; }
+    .semestre-6 { background-color: #ddeeff; }
+    .semestre-7 { background-color: #e0ccff; }
+    .semestre-8 { background-color: #ffccf2; }
+    .semestre-9 { background-color: #cccccc; }
   </style>
 </head>
 <body>
-  <h1><i>Pensum Economía</i></h1>
-  <h2><i>UMNG</i></h2>
-  <div id="pensum" class="grid"></div>
-  <button onclick="reiniciar()">Reiniciar progreso</button>
 
-  <div class="resumen">
-    <h2>Resumen de materias aprobadas por semestre</h2>
-    <table id="tablaResumen">
-      <thead>
-        <tr>
-          <th>Semestre</th>
-          <th>Materia</th>
-          <th>Profesor</th>
-          <th>Nota Corte 1</th>
-          <th>Nota Corte 2</th>
-          <th>Nota Corte 3</th>
-          <th>Definitiva</th>
-          <th>Intento</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+<h1>Pensum Economía</h1>
+<h2>UMNG</h2>
 
-  <!-- Formulario detalle al final -->
-  <div id="formularioDetalle">
-    <h3 id="tituloMateria">Materia</h3>
+<div id="contenedor-semestres" class="contenedor-semestres"></div>
 
-    <div id="intentosControls">
-      <button id="btnPrevIntento" title="Intento anterior">&lt;</button>
-      <div id="intentoNumero">Intento 1</div>
-      <button id="btnNextIntento" title="Siguiente intento">&gt;</button>
-    </div>
-
-    <label for="profesor">Profesor:</label>
-    <input type="text" id="profesor" placeholder="Nombre del profesor" />
-
-    <label for="nota1">Nota corte 1 (30%):</label>
-    <input type="number" id="nota1" min="0" max="5" step="0.01" />
-
-    <label for="nota2">Nota corte 2 (30%):</label>
-    <input type="number" id="nota2" min="0" max="5" step="0.01" />
-
-    <label for="nota3">Nota corte 3 (40%):</label>
-    <input type="number" id="nota3" min="0" max="5" step="0.01" />
-
-    <div class="promedio" id="promedioDefinitiva">Definitiva: 0.00</div>
-
-    <button id="guardarDatos">Guardar datos</button>
-  </div>
+<div class="info-final">
+  <h2>Información de Profesores, Notas y Promedios</h2>
+  <div id="info-extra"></div>
+</div>
 
 <script>
-  const materiasPorSemestre = [
-    ["Economía I (Introducción a la Economía)", [], "semestre-1"],
-    ["Historia Económica General", [], "semestre-1"],
-    ["Matemáticas I", [], "semestre-1"],
-    ["Expresión Oral y Escrita", [], "semestre-1"],
-    ["Metodología de la Investigación", [], "semestre-1"],
-    ["Cátedra Neogranadina", [], "semestre-1"],
-    ["Principios Constitucionales", [], "semestre-1"],
-
-    ["Microeconomía I", ["Economía I (Introducción a la Economía)"], "semestre-2"],
-    ["Historia Económica Colombiana", ["Historia Económica General"], "semestre-2"],
-    ["Matemáticas II", ["Matemáticas I"], "semestre-2"],
-    ["Estadística I", [], "semestre-2"],
-    ["Álgebra Lineal", [], "semestre-2"],
-    ["Humanidades I", [], "semestre-2"],
-    ["Extensión Cultural y Deportiva", [], "semestre-2"],
-
-    ["Microeconomía II", ["Microeconomía I"], "semestre-3"],
-    ["Macroeconomía I", ["Microeconomía I"], "semestre-3"],
-    ["Matemáticas III", ["Matemáticas II"], "semestre-3"],
-    ["Estadística II", ["Estadística I"], "semestre-3"],
-    ["Medición Económica", ["Microeconomía I"], "semestre-3"],
-
-    ["Microeconomía III", ["Microeconomía II"], "semestre-4"],
-    ["Macroeconomía II", ["Macroeconomía I"], "semestre-4"],
-    ["Economía Matemática", ["Matemáticas III"], "semestre-4"],
-    ["Estadística III", ["Estadística I"], "semestre-4"],
-    ["Contabilidad General", [], "semestre-4"],
-
-    ["Macroeconomía III", ["Microeconomía III", "Macroeconomía II", "Economía Matemática"], "semestre-5"],
-    ["Doctrinas Económicas I", [], "semestre-5"],
-    ["Econometría I", [], "semestre-5"],
-    ["Énfasis I", [], "semestre-5"],
-    ["Matemáticas Financieras", ["Estadística III"], "semestre-5"],
-    ["Contabilidad de Costos", ["Contabilidad General"], "semestre-5"],
-
-    ["Crecimiento Económico", ["Macroeconomía III"], "semestre-6"],
-    ["Doctrinas Económicas II", ["Doctrinas Económicas I"], "semestre-6"],
-    ["Econometría II", ["Econometría I"], "semestre-6"],
-    ["Énfasis II", [], "semestre-6"],
-    ["Teoría de la Decisión", [], "semestre-6"],
-    ["Análisis Financiero", ["Contabilidad de Costos"], "semestre-6"],
-
-    ["Teoría y Política Fiscal", ["Crecimiento Económico"], "semestre-7"],
-    ["Desarrollo Económico", [], "semestre-7"],
-    ["Teoría y Política Monetaria y Cambiaria", [], "semestre-7"],
-    ["Énfasis III", [], "semestre-7"],
-    ["Formulación y Evaluación de Proyectos", [], "semestre-7"],
-    ["Humanidades II", [], "semestre-7"],
-
-    ["Electiva I en lo Público", [], "semestre-8"],
-    ["Electiva I en lo Económico", [], "semestre-8"],
-    ["Economía Internacional", [], "semestre-8"],
-    ["Énfasis IV", [], "semestre-8"],
-    ["Evaluación Económica y Social de Proyectos", [], "semestre-8"],
-    ["Ética Profesional", [], "semestre-8"],
-
-    ["Electiva II en lo Público", [], "semestre-9"],
-    ["Electiva II en lo Económico", [], "semestre-9"],
-    ["Electiva en lo Internacional", [], "semestre-9"],
-    ["Electiva de Énfasis", ["Estadística I"], "semestre-9"],
-    ["Seminario de Grado", [], "semestre-9"]
+  const pensum = [
+    {
+      numero: 1,
+      materias: [
+        { nombre: "Economía I", requisitos: [] },
+        { nombre: "Matemáticas I", requisitos: [] },
+        { nombre: "Historia Económica General", requisitos: [] },
+        { nombre: "Contabilidad General", requisitos: [] },
+        { nombre: "Lectura y Escritura Académica", requisitos: [] }
+      ]
+    },
+    {
+      numero: 2,
+      materias: [
+        { nombre: "Economía II", requisitos: ["Economía I"] },
+        { nombre: "Matemáticas II", requisitos: ["Matemáticas I"] },
+        { nombre: "Historia Económica de Colombia", requisitos: ["Historia Económica General"] },
+        { nombre: "Contabilidad Nacional", requisitos: ["Contabilidad General"] },
+        { nombre: "Estadística I", requisitos: ["Matemáticas I"] }
+      ]
+    }
+    // Puedes continuar agregando los semestres del 3 al 9 aquí con sus materias y requisitos
   ];
 
-  let estado = JSON.parse(localStorage.getItem('estadoPensum')) || {};
-  let materiaSeleccionada = null;
-  let intentoActual = 0; // índice del intento que se muestra en formulario
+  const estadoMaterias = JSON.parse(localStorage.getItem('estadoMaterias')) || {};
 
-  function guardar() {
-    localStorage.setItem('estadoPensum', JSON.stringify(estado));
+  function guardarEstado() {
+    localStorage.setItem('estadoMaterias', JSON.stringify(estadoMaterias));
   }
 
-  function calcularDefinitiva(n1, n2, n3) {
-    return (n1 * 0.3 + n2 * 0.3 + n3 * 0.4).toFixed(2);
-  }
+  function crearFormularioExtra(nombreMateria, container) {
+    container.innerHTML = `
+      <div class="formulario-extra">
+        <label>Número de intentos: <input type="number" min="1" value="1" class="input-intentos"></label>
+        <div class="contenedor-intentos"></div>
+      </div>
+    `;
 
-  function requisitosAprobados(requisitos) {
-    return requisitos.every(r => estado[r]?.aprobada);
-  }
+    const inputIntentos = container.querySelector('.input-intentos');
+    const contenedorIntentos = container.querySelector('.contenedor-intentos');
 
-  function aprobarMateria(nombre) {
-    if(!estado[nombre]) estado[nombre] = { intentos: [] };
-    if(estado[nombre].intentos.length === 0) {
-      // Si no tiene intentos, no se marca aprobada hasta que guardes datos
-      return;
-    }
-    // Si ya está aprobada, al hacer click la desmarca
-    if(estado[nombre].aprobada) {
-      estado[nombre].aprobada = false;
-      estado[nombre].intentos = [];
-      materiaSeleccionada = null;
-      intentoActual = 0;
-    } else {
-      estado[nombre].aprobada = true;
-    }
-    guardar();
-  }
+    function crearBloquesIntento(num) {
+      contenedorIntentos.innerHTML = '';
+      for (let i = 1; i <= num; i++) {
+        const intento = document.createElement('div');
+        intento.innerHTML = `
+          <h4>Intento ${i}</h4>
+          <label>Profesor: <input type="text" class="profesor"></label>
+          <label>Nota 1 (30%): <input type="number" step="0.01" class="nota1"></label>
+          <label>Nota 2 (30%): <input type="number" step="0.01" class="nota2"></label>
+          <label>Nota 3 (40%): <input type="number" step="0.01" class="nota3"></label>
+          <p>Definitiva: <span class="promedio"></span></p>
+        `;
+        contenedorIntentos.appendChild(intento);
 
-  function mostrarFormularioDetalle(nombre) {
-    materiaSeleccionada = nombre;
-    intentoActual = 0;
-    actualizarFormulario();
-    document.getElementById('formularioDetalle').style.display = 'block';
-  }
-
-  function ocultarFormularioDetalle() {
-    materiaSeleccionada = null;
-    intentoActual = 0;
-    document.getElementById('formularioDetalle').style.display = 'none';
-  }
-
-  function actualizarFormulario() {
-    const titulo = document.getElementById('tituloMateria');
-    titulo.textContent = materiaSeleccionada;
-
-    const profesorInput = document.getElementById('profesor');
-    const n1Input = document.getElementById('nota1');
-    const n2Input = document.getElementById('nota2');
-    const n3Input = document.getElementById('nota3');
-    const promedioDiv = document.getElementById('promedioDefinitiva');
-    const intentoNumDiv = document.getElementById('intentoNumero');
-
-    let intentos = estado[materiaSeleccionada]?.intentos || [];
-
-    if(intentos.length === 0) {
-      // No hay intentos guardados, limpiar formulario
-      profesorInput.value = '';
-      n1Input.value = '';
-      n2Input.value = '';
-      n3Input.value = '';
-      promedioDiv.textContent = 'Definitiva: 0.00';
-      intentoNumDiv.textContent = 'Intento 1';
-      return;
-    }
-
-    if(intentoActual < 0) intentoActual = 0;
-    if(intentoActual >= intentos.length) intentoActual = intentos.length -1;
-
-    const intento = intentos[intentoActual];
-
-    profesorInput.value = intento.profesor || '';
-    n1Input.value = intento.n1 !== undefined ? intento.n1 : '';
-    n2Input.value = intento.n2 !== undefined ? intento.n2 : '';
-    n3Input.value = intento.n3 !== undefined ? intento.n3 : '';
-    promedioDiv.textContent = 'Definitiva: ' + (intento.definitiva || '0.00');
-    intentoNumDiv.textContent = `Intento ${intentoActual + 1} de ${intentos.length}`;
-  }
-
-  function actualizarDefinitiva() {
-    const n1 = parseFloat(document.getElementById('nota1').value);
-    const n2 = parseFloat(document.getElementById('nota2').value);
-    const n3 = parseFloat(document.getElementById('nota3').value);
-
-    if(!isNaN(n1) && !isNaN(n2) && !isNaN(n3)) {
-      const definitiva = calcularDefinitiva(n1,n2,n3);
-      document.getElementById('promedioDefinitiva').textContent = 'Definitiva: ' + definitiva;
-    } else {
-      document.getElementById('promedioDefinitiva').textContent = 'Definitiva: 0.00';
-    }
-  }
-
-  // Eventos para actualizar la definitiva al cambiar notas
-  ['nota1','nota2','nota3'].forEach(id => {
-    document.getElementById(id).addEventListener('input', actualizarDefinitiva);
-  });
-
-  document.getElementById('guardarDatos').addEventListener('click', () => {
-    if(!materiaSeleccionada) return alert('Selecciona una materia para guardar datos.');
-
-    const profesor = document.getElementById('profesor').value.trim();
-    const n1 = parseFloat(document.getElementById('nota1').value);
-    const n2 = parseFloat(document.getElementById('nota2').value);
-    const n3 = parseFloat(document.getElementById('nota3').value);
-
-    if(!profesor || isNaN(n1) || isNaN(n2) || isNaN(n3)) {
-      return alert('Por favor completa todos los campos correctamente.');
-    }
-
-    const definitiva = calcularDefinitiva(n1, n2, n3);
-
-    if(!estado[materiaSeleccionada]) estado[materiaSeleccionada] = { intentos: [] };
-
-    // Guardar intento actual (sobrescribir si ya existe)
-    estado[materiaSeleccionada].intentos[intentoActual] = { profesor, n1, n2, n3, definitiva };
-
-    // Marcar aprobada si alguna definitiva >= 3.0 (ajusta según regla real)
-    estado[materiaSeleccionada].aprobada = estado[materiaSeleccionada].intentos.some(i => parseFloat(i.definitiva) >= 3);
-
-    guardar();
-    renderPensum();
-    mostrarFormularioDetalle(materiaSeleccionada);
-    alert('Datos guardados.');
-  });
-
-  // Botones para cambiar intento
-  document.getElementById('btnPrevIntento').addEventListener('click', () => {
-    if(!materiaSeleccionada) return;
-    if(intentoActual > 0) {
-      intentoActual--;
-      actualizarFormulario();
-    }
-  });
-  document.getElementById('btnNextIntento').addEventListener('click', () => {
-    if(!materiaSeleccionada) return;
-    let intentos = estado[materiaSeleccionada]?.intentos || [];
-    if(intentoActual < intentos.length -1) {
-      intentoActual++;
-      actualizarFormulario();
-    }
-  });
-
-  // Botón para agregar nuevo intento
-  const btnAgregarIntento = document.createElement('button');
-  btnAgregarIntento.textContent = 'Agregar nuevo intento';
-  btnAgregarIntento.style.marginTop = '15px';
-  btnAgregarIntento.style.display = 'block';
-  btnAgregarIntento.style.marginLeft = 'auto';
-  btnAgregarIntento.style.marginRight = 'auto';
-  document.getElementById('formularioDetalle').appendChild(btnAgregarIntento);
-
-  btnAgregarIntento.addEventListener('click', () => {
-    if(!materiaSeleccionada) return alert('Selecciona una materia antes.');
-    if(!estado[materiaSeleccionada]) estado[materiaSeleccionada] = { intentos: [] };
-    estado[materiaSeleccionada].intentos.push({ profesor: '', n1: '', n2: '', n3: '', definitiva: '0.00' });
-    intentoActual = estado[materiaSeleccionada].intentos.length -1;
-    actualizarFormulario();
-  });
-
-  function renderResumen() {
-    const tbody = document.querySelector('#tablaResumen tbody');
-    tbody.innerHTML = "";
-
-    materiasPorSemestre.forEach(([nombre, _, clase]) => {
-      const datos = estado[nombre];
-      if(datos?.intentos?.length) {
-        datos.intentos.forEach((intento, index) => {
-          const semestreNum = clase.split('-')[1];
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${semestreNum}</td>
-            <td>${nombre}</td>
-            <td>${intento.profesor || ''}</td>
-            <td>${intento.n1 !== undefined ? intento.n1 : ''}</td>
-            <td>${intento.n2 !== undefined ? intento.n2 : ''}</td>
-            <td>${intento.n3 !== undefined ? intento.n3 : ''}</td>
-            <td>${intento.definitiva || ''}</td>
-            <td>${index + 1}</td>
-          `;
-          tbody.appendChild(tr);
-        });
+        const inputs = intento.querySelectorAll('input');
+        inputs.forEach(input => input.addEventListener('input', () => {
+          const n1 = parseFloat(intento.querySelector('.nota1').value) || 0;
+          const n2 = parseFloat(intento.querySelector('.nota2').value) || 0;
+          const n3 = parseFloat(intento.querySelector('.nota3').value) || 0;
+          const promedio = (n1 * 0.3 + n2 * 0.3 + n3 * 0.4).toFixed(2);
+          intento.querySelector('.promedio').textContent = promedio;
+        }));
       }
+    }
+
+    crearBloquesIntento(1);
+
+    inputIntentos.addEventListener('input', () => {
+      const cantidad = parseInt(inputIntentos.value) || 1;
+      crearBloquesIntento(cantidad);
     });
   }
 
-  function renderPensum() {
-    const contenedor = document.getElementById('pensum');
+  function actualizarVista() {
+    const contenedor = document.getElementById('contenedor-semestres');
     contenedor.innerHTML = '';
 
-    const semestresDivs = {};
-    for(let i=1; i<=9; i++) {
+    pensum.forEach(semestre => {
       const div = document.createElement('div');
-      div.className = `semestre semestre-${i}`;
-      div.innerHTML = `<h3>Semestre ${i}</h3>`;
-      contenedor.appendChild(div);
-      semestresDivs[`semestre-${i}`] = div;
-    }
+      div.className = `semestre semestre-${semestre.numero}`;
+      div.innerHTML = `<h3>Semestre ${semestre.numero}</h3>`;
 
-    materiasPorSemestre.forEach(([nombre, requisitos, clase]) => {
-      const materiaDiv = document.createElement('div');
-      materiaDiv.className = 'materia';
+      semestre.materias.forEach(materia => {
+        const matDiv = document.createElement('div');
+        matDiv.className = 'materia';
+        matDiv.textContent = materia.nombre;
 
-      const estaAprobada = estado[nombre]?.aprobada;
-      const requisitosOk = requisitosAprobados(requisitos);
+        const completada = estadoMaterias[materia.nombre]?.completada;
+        const requisitosCumplidos = materia.requisitos.every(req => estadoMaterias[req]?.completada);
 
-      if(!estaAprobada && !requisitosOk) {
-        materiaDiv.classList.add('bloqueada');
-      }
-      if(estaAprobada) {
-        materiaDiv.classList.add('aprobada');
-      }
+        if (completada) matDiv.classList.add('completada');
+        else if (!requisitosCumplidos) matDiv.classList.add('bloqueada');
 
-      materiaDiv.innerHTML = `<strong>${nombre}</strong>
-        <div class="requisitos">Requiere: ${requisitos.length ? requisitos.join(", ") : "Ninguno"}</div>
-      `;
+        matDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!requisitosCumplidos) return;
 
-      materiaDiv.addEventListener('click', () => {
-        if(materiaDiv.classList.contains('bloqueada')) return;
+          if (!estadoMaterias[materia.nombre]?.completada) {
+            estadoMaterias[materia.nombre] = { completada: true };
+            guardarEstado();
+            matDiv.classList.add('completada');
 
-        // Cambiar estado de aprobado/desaprobado
-        if(estado[nombre]?.aprobada) {
-          // Si ya estaba aprobada, al hacer click la desmarcamos (elimino todos intentos)
-          estado[nombre].aprobada = false;
-          estado[nombre].intentos = [];
-          if(materiaSeleccionada === nombre) ocultarFormularioDetalle();
-        } else {
-          // Si no estaba aprobada y no tiene intentos, agregar uno vacío para que pueda guardarlo
-          if(!estado[nombre]) estado[nombre] = { intentos: [] };
-          if(estado[nombre].intentos.length === 0) {
-            estado[nombre].intentos.push({ profesor: '', n1: '', n2: '', n3: '', definitiva: '0.00' });
+            const extraForm = document.createElement('div');
+            crearFormularioExtra(materia.nombre, extraForm);
+            matDiv.appendChild(extraForm);
           }
-          estado[nombre].aprobada = true;
-          mostrarFormularioDetalle(nombre);
-        }
-        guardar();
-        renderPensum();
+        });
+
+        div.appendChild(matDiv);
       });
 
-      semestresDivs[clase].appendChild(materiaDiv);
+      contenedor.appendChild(div);
     });
-
-    renderResumen();
   }
 
-  function reiniciar() {
-    if(confirm('¿Deseas reiniciar todo el progreso?')) {
-      localStorage.removeItem('estadoPensum');
-      estado = {};
-      materiaSeleccionada = null;
-      intentoActual = 0;
-      ocultarFormularioDetalle();
-      renderPensum();
-    }
-  }
-
-  renderPensum();
+  actualizarVista();
 </script>
+
 </body>
 </html>
