@@ -84,7 +84,6 @@
   <div class="contenedor-semestres" id="contenedor"></div>
 
   <script>
-    // Definición de materias por semestre
     const materias = {
       1: [
         { nombre: "Economía I", requisitos: [] },
@@ -99,42 +98,42 @@
         { nombre: "Microeconomía I", requisitos: ["Economía II", "Matemáticas II"] },
         { nombre: "Contabilidad General", requisitos: [] }
       ],
-      // Completa con los semestres 4 a 9 si quieres
     };
 
-    // Estado guardado en localStorage
     const estado = JSON.parse(localStorage.getItem("estadoPensum")) || {};
 
-    // Función que verifica si una materia está desbloqueada (sus requisitos están aprobados)
     function estaDesbloqueada(materia) {
       return materia.requisitos.every(req => estado[req]?.aprobada);
     }
 
-    // Función para crear cada materia en el DOM
+    function guardarEstado() {
+      localStorage.setItem("estadoPensum", JSON.stringify(estado));
+    }
+
+    function calcularPromedio(n1, n2, n3) {
+      return ((n1 + n2 + n3) / 3).toFixed(2);
+    }
+
     function crearMateria(materia) {
       const div = document.createElement("div");
       div.classList.add("materia");
 
       const desbloqueada = estaDesbloqueada(materia);
 
-      // Materia bloqueada
       if (!desbloqueada) {
         div.classList.add("bloqueada");
         div.textContent = materia.nombre + " (Requisitos no cumplidos)";
         return div;
       }
 
-      // Materia aprobada
       if (estado[materia.nombre]?.aprobada) {
         div.classList.add("aprobada");
         div.textContent = `${materia.nombre} (Aprobada) - Profesor: ${estado[materia.nombre].profesor} - Promedio: ${estado[materia.nombre].promedio}`;
         return div;
       }
 
-      // Materia desbloqueada y no aprobada aún
       div.textContent = materia.nombre;
 
-      // Crear formulario oculto para profesor y notas
       const formulario = document.createElement("div");
       formulario.classList.add("formulario");
 
@@ -146,7 +145,6 @@
         <button>Guardar</button>
       `;
 
-      // Añadir evento al botón Guardar
       formulario.querySelector("button").addEventListener("click", (e) => {
         e.stopPropagation();
 
@@ -160,7 +158,7 @@
           return;
         }
 
-        const promedio = ((n1 + n2 + n3) / 3).toFixed(2);
+        const promedio = calcularPromedio(n1, n2, n3);
 
         estado[materia.nombre] = {
           profesor,
@@ -171,15 +169,15 @@
           aprobada: promedio >= 3.0
         };
 
-        localStorage.setItem("estadoPensum", JSON.stringify(estado));
+        guardarEstado();
 
-        // Recargar para actualizar el estado visual
-        location.reload();
+        // Actualizar el contenido de la materia sin recargar página
+        div.classList.add("aprobada");
+        div.textContent = `${materia.nombre} (Aprobada) - Profesor: ${profesor} - Promedio: ${promedio}`;
       });
 
       div.appendChild(formulario);
 
-      // Mostrar/ocultar formulario al hacer clic en la materia (si no está bloqueada ni aprobada)
       div.addEventListener("click", () => {
         if (formulario.style.display === "block") {
           formulario.style.display = "none";
@@ -191,10 +189,9 @@
       return div;
     }
 
-    // Función para renderizar el pensum completo
     function renderizar() {
       const contenedor = document.getElementById("contenedor");
-      contenedor.innerHTML = ""; // Limpiar
+      contenedor.innerHTML = "";
 
       for (const semestre in materias) {
         const divSemestre = document.createElement("div");
@@ -210,7 +207,6 @@
       }
     }
 
-    // Inicializar renderizado
     renderizar();
   </script>
 
