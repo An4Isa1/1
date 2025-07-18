@@ -39,19 +39,24 @@
       padding: 10px;
       cursor: pointer;
       position: relative;
+      user-select: none;
     }
     .materia.bloqueada {
       opacity: 0.5;
       pointer-events: none;
     }
-    .materia.activa .requisitos {
-      display: block;
+    .materia.aprobada {
+      background-color: #d4efdf;
+      text-decoration: line-through;
     }
     .requisitos {
-      display: none;
       font-size: 0.9em;
       color: #555;
       margin-top: 8px;
+      display: none;
+    }
+    .materia.activa .requisitos {
+      display: block;
     }
     .semestre-1 { background-color: #d6eaf8; }
     .semestre-2 { background-color: #aed6f1; }
@@ -68,6 +73,7 @@
   <h1><i>Pensum Economía</i></h1>
   <h2><i>UMNG</i></h2>
   <div id="pensum" class="grid"></div>
+  <button onclick="reiniciar()">Reiniciar progreso</button>
 
   <script>
     const materiasPorSemestre = [
@@ -134,36 +140,79 @@
       ["Seminario de Grado", [], "semestre-9"]
     ];
 
-    function renderPensum() {
-      const contenedor = document.getElementById("pensum");
-      contenedor.innerHTML = "";
+    // Guardamos estado de materias aprobadas por nombre
+    let estado = JSON.parse(localStorage.getItem('estadoPensum')) || {};
 
-      // Crear divs para cada semestre
+    // Guarda estado en localStorage
+    function guardar() {
+      localStorage.setItem('estadoPensum', JSON.stringify(estado));
+    }
+
+    // Reinicia todo el progreso
+    function reiniciar() {
+      if(confirm("¿Deseas reiniciar todo el progreso?")) {
+        estado = {};
+        guardar();
+        renderPensum();
+      }
+    }
+
+    // Función para saber si los requisitos están aprobados
+    function requisitosAprobados(requisitos) {
+      return requisitos.every(req => estado[req] === true);
+    }
+
+    // Al aprobar una materia desbloqueamos las que dependen de ella
+    function aprobarMateria(nombre) {
+      if(estado[nombre]) {
+        // Si ya estaba aprobada, la desmarcamos (toggle)
+        delete estado[nombre];
+      } else {
+        estado[nombre] = true;
+      }
+      guardar();
+      renderPensum();
+    }
+
+    // Renderizamos el pensum completo
+    function renderPensum() {
+      const contenedor = document.getElementById('pensum');
+      contenedor.innerHTML = '';
+
+      // Creamos divs para semestres
       const semestresDivs = {};
       for(let i=1; i<=9; i++) {
-        const divSem = document.createElement("div");
-        divSem.className = `semestre semestre-${i}`;
-        divSem.innerHTML = `<h3>Semestre ${i}</h3>`;
-        contenedor.appendChild(divSem);
-        semestresDivs[`semestre-${i}`] = divSem;
+        const div = document.createElement('div');
+        div.className = `semestre semestre-${i}`;
+        div.innerHTML = `<h3>Semestre ${i}</h3>`;
+        contenedor.appendChild(div);
+        semestresDivs[`semestre-${i}`] = div;
       }
 
+      // Por cada materia
       materiasPorSemestre.forEach(([nombre, requisitos, clase]) => {
-        const divMateria = document.createElement("div");
-        divMateria.className = "materia";
+        const divMateria = document.createElement('div');
+        divMateria.className = 'materia';
 
-        // Validar si los requisitos están aprobados para poder acceder (aquí sólo mostramos bloqueo si no están)
-        const requisitosOk = requisitos.every(req => false); // No hay estado guardado ni aprobado, por eso false siempre
-        if(!requisitosOk) divMateria.classList.add("bloqueada");
+        // Si está aprobada, agregamos clase aprobada
+        if(estado[nombre]) {
+          divMateria.classList.add('aprobada');
+        }
+
+        // Si no está aprobada y no tiene requisitos aprobados, bloqueamos
+        else if(!requisitosAprobados(requisitos)) {
+          divMateria.classList.add('bloqueada');
+        }
 
         divMateria.innerHTML = `
           <strong>${nombre}</strong>
           <div class="requisitos">Requiere: ${requisitos.length ? requisitos.join(", ") : "Ninguno"}</div>
         `;
 
-        // Toggle mostrar requisitos al hacer click
-        divMateria.addEventListener("click", () => {
-          divMateria.classList.toggle("activa");
+        // Al hacer click, si no bloqueada, toggle aprobado y renderizar para actualizar bloqueos
+        divMateria.addEventListener('click', () => {
+          if(divMateria.classList.contains('bloqueada')) return;
+          aprobarMateria(nombre);
         });
 
         semestresDivs[clase].appendChild(divMateria);
