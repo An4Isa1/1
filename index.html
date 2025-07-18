@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pensum Economía UMNG</title>
+  <style>
+    /* Fuente y estilos generales */
+    body {
+      font-family: 'Times New Roman', serif;
+      background-color: #f9f9f9;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      text-align: center;
+    }
+
+    .contenedor {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .semestre {
+      border: 2px solid #ccc;
+      border-radius: 16px;
+      padding: 10px;
+      width: 250px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .semestre h3 {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .materia {
+      margin: 10px 0;
+      padding: 8px;
+      background-color: #e0f7fa;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .materia:hover {
+      background-color: #b2ebf2;
+    }
+
+    .formulario {
+      display: none;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .formulario input {
+      display: block;
+      width: 100%;
+      margin-bottom: 5px;
+      padding: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .promedio {
+      margin-top: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Título -->
+  <h1>Pensum Economía</h1>
+  <h2>UMNG</h2>
+
+  <!-- Contenedor principal de los semestres -->
+  <div class="contenedor">
+    <!-- Semestre 1 -->
+    <div class="semestre">
+      <h3>Semestre 1</h3>
+
+      <!-- Materia 1 -->
+      <div class="materia" onclick="toggleFormulario(this)">
+        Introducción a la Economía
+        <div class="formulario">
+          <input type="text" placeholder="Nombre del profesor" class="profesor">
+          <input type="number" step="0.01" placeholder="Nota corte 1" class="nota">
+          <input type="number" step="0.01" placeholder="Nota corte 2" class="nota">
+          <input type="number" step="0.01" placeholder="Nota corte 3" class="nota">
+          <div class="promedio"></div>
+        </div>
+      </div>
+
+      <!-- Materia 2 -->
+      <div class="materia" onclick="toggleFormulario(this)">
+        Historia Económica General
+        <div class="formulario">
+          <input type="text" placeholder="Nombre del profesor" class="profesor">
+          <input type="number" step="0.01" placeholder="Nota corte 1" class="nota">
+          <input type="number" step="0.01" placeholder="Nota corte 2" class="nota">
+          <input type="number" step="0.01" placeholder="Nota corte 3" class="nota">
+          <div class="promedio"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Puedes copiar este bloque y cambiarle el número para agregar más semestres -->
+    <!-- Semestre 2 (ejemplo) -->
+    <div class="semestre">
+      <h3>Semestre 2</h3>
+
+      <div class="materia" onclick="toggleFormulario(this)">
+        Microeconomía I
+        <div class="formulario">
+          <input type="text" placeholder="Nombre del profesor" class="profesor">
+          <input type="number" step="0.01" placeholder="Nota corte 1" class="nota">
+          <input type="number" step="0.01" placeholder="Nota corte 2" class="nota">
+          <input type="number" step="0.01" placeholder="Nota corte 3" class="nota">
+          <div class="promedio"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script para manejar el despliegue y cálculo de promedio -->
+  <script>
+    function toggleFormulario(materiaDiv) {
+      const form = materiaDiv.querySelector('.formulario');
+      form.style.display = form.style.display === 'block' ? 'none' : 'block';
+
+      // Detectar cambios en las notas
+      const notas = form.querySelectorAll('.nota');
+      notas.forEach(input => {
+        input.oninput = () => {
+          const valores = Array.from(notas).map(n => parseFloat(n.value) || 0);
+          const promedio = valores.reduce((a, b) => a + b, 0) / 3;
+          form.querySelector('.promedio').textContent = 'Promedio: ' + promedio.toFixed(2);
+        };
+      });
+    }
+  </script>
+</body>
+</html>
