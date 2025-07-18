@@ -2,292 +2,78 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pensum Economía UMNG</title>
+  <title>Pensum Economía - UMNG</title>
   <style>
     body {
       font-family: 'Times New Roman', serif;
       margin: 0;
-      padding: 0;
+      padding: 0 1rem;
     }
-
-    h1, h2 {
+    h1 {
       font-family: Georgia, serif;
       font-style: italic;
       text-align: center;
+      margin-top: 1rem;
     }
-
-    .semestres {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      padding: 20px;
-    }
-
     .semestre {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 10px;
-      border-radius: 10px;
-      width: 200px;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
     }
-
-    .semestre-1 { background-color: #e1f5fe; }
-    .semestre-2 { background-color: #ffecb3; }
-    .semestre-3 { background-color: #dcedc8; }
-    .semestre-4 { background-color: #f8bbd0; }
-    .semestre-5 { background-color: #ffe0b2; }
-    .semestre-6 { background-color: #d1c4e9; }
-    .semestre-7 { background-color: #b2ebf2; }
-    .semestre-8 { background-color: #c8e6c9; }
-    .semestre-9 { background-color: #f0f4c3; }
-
     .materia {
-      padding: 5px;
-      border: 1px solid #555;
-      border-radius: 5px;
-      background: white;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
       cursor: pointer;
+      background: #f2f2f2;
+      border-radius: 0.5rem;
     }
-
     .materia.bloqueada {
       background: #ccc;
-      cursor: not-allowed;
+      pointer-events: none;
       opacity: 0.5;
     }
-
     .materia.aprobada {
       text-decoration: line-through;
-      background: #a5d6a7;
+      background: #c0f5c0;
     }
-
-    .info-materias {
-      padding: 20px;
+    .campos-extra {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #e8e8e8;
+      border-radius: 0.5rem;
     }
-
-    .detalle {
-      margin-bottom: 20px;
-      border-top: 1px solid #aaa;
-      padding-top: 10px;
+    .intento {
+      margin-bottom: 1rem;
     }
-
-    input {
-      margin: 5px 0;
-      display: block;
+    .definitiva {
+      font-weight: bold;
     }
-
-    button {
-      margin-top: 5px;
+    .contenedor-materias {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .final-info {
+      margin-top: 3rem;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      margin-bottom: 5px;
     }
   </style>
 </head>
 <body>
-  <h1>Pensum Economía</h1>
-  <h2>UMNG</h2>
-
-  <div class="semestres" id="contenedor-semestres"></div>
-
-  <h2>Información de materias aprobadas</h2>
-  <div id="info-materias" class="info-materias"></div>
+  <h1>Pensum Economía - UMNG</h1>
+  <div id="contenedor" class="contenedor-materias"></div>
 
   <script>
-    const pensum = [
+    const materias = [
       {
-        nombre: "Economía I",
-        requisitos: [],
-        semestre: 1
-      },
-      {
-        nombre: "Matemáticas I",
-        requisitos: [],
-        semestre: 1
-      },
-      {
-        nombre: "Historia Económica",
-        requisitos: [],
-        semestre: 1
-      },
-      {
-        nombre: "Economía II",
-        requisitos: ["Economía I"],
-        semestre: 2
-      },
-      {
-        nombre: "Matemáticas II",
-        requisitos: ["Matemáticas I"],
-        semestre: 2
-      },
-      {
-        nombre: "Microeconomía I",
-        requisitos: ["Economía I"],
-        semestre: 3
-      },
-      {
-        nombre: "Macroeconomía I",
-        requisitos: ["Economía II"],
-        semestre: 3
-      },
-      {
-        nombre: "Microeconomía II",
-        requisitos: ["Microeconomía I"],
-        semestre: 4
-      },
-      {
-        nombre: "Macroeconomía II",
-        requisitos: ["Macroeconomía I"],
-        semestre: 4
-      },
-      {
-        nombre: "Trabajo de Grado",
-        requisitos: ["Microeconomía II", "Macroeconomía II"],
-        semestre: 9
-      }
-    ];
-
-    let estado = JSON.parse(localStorage.getItem("estadoMaterias")) || {};
-
-    const contenedor = document.getElementById("contenedor-semestres");
-    const infoMaterias = document.getElementById("info-materias");
-
-    function renderizar() {
-      contenedor.innerHTML = "";
-      infoMaterias.innerHTML = "";
-
-      for (let s = 1; s <= 9; s++) {
-        const divSem = document.createElement("div");
-        divSem.className = `semestre semestre-${s}`;
-
-        const titulo = document.createElement("b");
-        titulo.innerText = `Semestre ${s}`;
-        divSem.appendChild(titulo);
-
-        pensum.filter(m => m.semestre === s).forEach(materia => {
-          const div = document.createElement("div");
-          div.className = "materia";
-          div.innerText = materia.nombre;
-
-          const estadoActual = estado[materia.nombre] || { aprobada: false, intentos: [] };
-
-          if (estadoActual.aprobada) {
-            div.classList.add("aprobada");
-          } else if (!materia.requisitos.every(r => estado[r]?.aprobada)) {
-            div.classList.add("bloqueada");
-          }
-
-          div.addEventListener("click", () => {
-            if (!div.classList.contains("bloqueada")) {
-              if (!estado[materia.nombre]) {
-                estado[materia.nombre] = { aprobada: true, intentos: [{ profesor: "", notas: [0, 0, 0] }] };
-              } else {
-                estado[materia.nombre].aprobada = true;
-              }
-              guardarEstado();
-              renderizar();
-            }
-          });
-
-          divSem.appendChild(div);
-        });
-
-        contenedor.appendChild(divSem);
-      }
-
-      // Mostrar detalles al final
-      for (const nombre in estado) {
-        const materia = estado[nombre];
-        if (!materia.aprobada) continue;
-
-        const detalle = document.createElement("div");
-        detalle.className = "detalle";
-
-        const titulo = document.createElement("h3");
-        titulo.innerText = nombre;
-        detalle.appendChild(titulo);
-
-        const labelIntentos = document.createElement("label");
-        labelIntentos.textContent = "Número de intentos:";
-        const inputIntentos = document.createElement("input");
-        inputIntentos.type = "number";
-        inputIntentos.min = 1;
-        inputIntentos.value = materia.intentos.length;
-        inputIntentos.addEventListener("change", () => {
-          const nuevosIntentos = parseInt(inputIntentos.value);
-          while (materia.intentos.length < nuevosIntentos) {
-            materia.intentos.push({ profesor: "", notas: [0, 0, 0] });
-          }
-          materia.intentos = materia.intentos.slice(0, nuevosIntentos);
-          guardarEstado();
-          renderizar();
-        });
-
-        detalle.appendChild(labelIntentos);
-        detalle.appendChild(inputIntentos);
-
-        materia.intentos.forEach((intento, index) => {
-          const cont = document.createElement("div");
-          cont.innerHTML = `<b>Intento ${index + 1}</b>`;
-          
-          const prof = document.createElement("input");
-          prof.placeholder = "Nombre del profesor";
-          prof.value = intento.profesor;
-          prof.addEventListener("input", e => {
-            intento.profesor = e.target.value;
-            guardarEstado();
-          });
-
-          const n1 = document.createElement("input");
-          n1.type = "number";
-          n1.placeholder = "Nota 1 (30%)";
-          n1.value = intento.notas[0];
-          n1.addEventListener("input", e => {
-            intento.notas[0] = parseFloat(e.target.value) || 0;
-            guardarEstado();
-            renderizar();
-          });
-
-          const n2 = document.createElement("input");
-          n2.type = "number";
-          n2.placeholder = "Nota 2 (30%)";
-          n2.value = intento.notas[1];
-          n2.addEventListener("input", e => {
-            intento.notas[1] = parseFloat(e.target.value) || 0;
-            guardarEstado();
-            renderizar();
-          });
-
-          const n3 = document.createElement("input");
-          n3.type = "number";
-          n3.placeholder = "Nota 3 (40%)";
-          n3.value = intento.notas[2];
-          n3.addEventListener("input", e => {
-            intento.notas[2] = parseFloat(e.target.value) || 0;
-            guardarEstado();
-            renderizar();
-          });
-
-          const def = (intento.notas[0] * 0.3 + intento.notas[1] * 0.3 + intento.notas[2] * 0.4).toFixed(2);
-          const defLabel = document.createElement("p");
-          defLabel.innerText = `Definitiva: ${def}`;
-
-          cont.appendChild(prof);
-          cont.appendChild(n1);
-          cont.appendChild(n2);
-          cont.appendChild(n3);
-          cont.appendChild(defLabel);
-          detalle.appendChild(cont);
-        });
-
-        infoMaterias.appendChild(detalle);
-      }
-    }
-
-    function guardarEstado() {
-      localStorage.setItem("estadoMaterias", JSON.stringify(estado));
-    }
-
-    renderizar();
-  </script>
-</body>
-</html>
+        semestre: 1,
+        materias: [
+          { nombre: "Economía I", requisitos: [] },
+          { nombre: "Historia Económica", requisitos: [] },
+          { nombre: "Matemáticas I", requisitos: [] },
+          { nombre: "Contabilidad", requisitos: [] }
+        ]
